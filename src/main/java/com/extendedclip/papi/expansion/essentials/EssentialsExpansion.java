@@ -104,6 +104,11 @@ public class EssentialsExpansion extends PlaceholderExpansion {
         final String papiTrue = PlaceholderAPIPlugin.booleanTrue();
         final String papiFalse = PlaceholderAPIPlugin.booleanFalse();
 
+        if (identifier.equals("baltop_total")) {
+            BigDecimal balanceTopTotal = baltop.getBalanceTopTotal();
+            return balanceTopTotal.toString();
+        }
+
         // Put this before the null check as most of it is not required
         if (identifier.startsWith("baltop_")) {
             Map<UUID, BalanceTop.Entry> baltopCache = baltop.getBalanceTopCache();

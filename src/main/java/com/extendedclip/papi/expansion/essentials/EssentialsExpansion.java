@@ -109,6 +109,13 @@ public class EssentialsExpansion extends PlaceholderExpansion {
             return balanceTopTotal.toString();
         }
 
+        if (identifier.startsWith("baltop_multiplier_")) {
+            identifier = identifier.substring("baltop_multiplier_".length());
+            final BigDecimal multiplier = BigDecimal.valueOf(Double.parseDouble(identifier));
+            final BigDecimal balanceTopTotal = baltop.getBalanceTopTotal();
+            return balanceTopTotal.multiply(multiplier).min(BigDecimal.ZERO).toString();
+        }
+
         // Put this before the null check as most of it is not required
         if (identifier.startsWith("baltop_")) {
             Map<UUID, BalanceTop.Entry> baltopCache = baltop.getBalanceTopCache();

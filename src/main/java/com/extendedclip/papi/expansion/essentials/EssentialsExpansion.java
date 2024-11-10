@@ -25,12 +25,15 @@ import com.earth2me.essentials.Kit;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.utils.DateUtil;
 import com.earth2me.essentials.utils.DescParseTickFormat;
-
 import com.google.common.primitives.Ints;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.essentialsx.api.v2.services.BalanceTop;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -41,8 +44,11 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
@@ -113,7 +119,7 @@ public class EssentialsExpansion extends PlaceholderExpansion {
             identifier = identifier.substring("baltop_multiplier_".length());
             final BigDecimal multiplier = BigDecimal.valueOf(Double.parseDouble(identifier));
             final BigDecimal balanceTopTotal = baltop.getBalanceTopTotal();
-            return balanceTopTotal.multiply(multiplier).min(BigDecimal.ZERO).toString();
+            return balanceTopTotal.multiply(multiplier).max(BigDecimal.ZERO).toString();
         }
 
         // Put this before the null check as most of it is not required
@@ -237,7 +243,7 @@ public class EssentialsExpansion extends PlaceholderExpansion {
 
             long diff = TimeUnit.MILLISECONDS.toSeconds(d1 - d2);
 
-            if(diff < cooldown) return String.valueOf((int) (cooldown - diff));
+            if (diff < cooldown) return String.valueOf((int) (cooldown - diff));
 
             return "0";
         }
@@ -377,11 +383,11 @@ public class EssentialsExpansion extends PlaceholderExpansion {
         if (identifier.startsWith("worth")) {
             ItemStack item;
 
-            if (identifier.contains(":")){
+            if (identifier.contains(":")) {
                 Material material = Material.getMaterial(identifier.replace("worth:", "").toUpperCase());
 
                 if (material == null) return "";
-                item = new ItemStack(material,1);
+                item = new ItemStack(material, 1);
             } else {
                 Player oPlayer = player.getPlayer();
                 if (oPlayer == null) return "";
@@ -417,8 +423,8 @@ public class EssentialsExpansion extends PlaceholderExpansion {
                 return ChatColor.translateAlternateColorCodes('&', user.getAfkMessage());
             case "afk_player_count":
                 return String.valueOf(essentials.getUserMap().getAllUniqueUsers().stream()
-                        .map(UUID -> essentials.getUser(UUID)).filter(User::isAfk)
-                        .count());
+                    .map(UUID -> essentials.getUser(UUID)).filter(User::isAfk)
+                    .count());
             case "msg_ignore":
                 return user.isIgnoreMsg() ? papiTrue : papiFalse;
             case "fly":
@@ -447,11 +453,11 @@ public class EssentialsExpansion extends PlaceholderExpansion {
                 return user.getReplyRecipient() != null ? user.getReplyRecipient().getName() : "";
             case "safe_online":
                 return String.valueOf(StreamSupport.stream(essentials.getOnlineUsers().spliterator(), false)
-                        .filter(user1 -> !user1.isHidden())
-                        .count());
+                    .filter(user1 -> !user1.isHidden())
+                    .count());
             case "world_date":
                 return DateFormat.getDateInstance(DateFormat.MEDIUM, essentials.getI18n().getCurrentLocale())
-                        .format(DescParseTickFormat.ticksToDate(user.getWorld() == null ? 0 : user.getWorld().getFullTime()));
+                    .format(DescParseTickFormat.ticksToDate(user.getWorld() == null ? 0 : user.getWorld().getFullTime()));
             case "world_time":
                 return DescParseTickFormat.format12(user.getWorld() == null ? 0 : user.getWorld().getTime());
             case "world_time_24":
